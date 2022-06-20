@@ -5,6 +5,8 @@ RUN npm install -g npm@latest
 RUN mkdir -p /home/node/app/node_modules
 RUN chown -R node:node /home/node/app
 
+USER node
+
 WORKDIR /home/node/app
 
 COPY package.json ./

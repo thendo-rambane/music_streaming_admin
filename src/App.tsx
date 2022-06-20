@@ -1,45 +1,37 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { AppShell, Navbar, Header } from "@mantine/core";
+import MainLinks from "./components/MainLink";
+import { Routes, Route } from "react-router-dom";
+import Albums from "./pages/Albums";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
+    <AppShell
+      padding="md"
+      header={
+        <Header height={60} p="xs">
+          <h1>World</h1>
+        </Header>
+      }
+      navbar={
+        <Navbar width={{ base: 300 }} height={500} p="xs">
+          <Navbar.Section grow mt="xs">
+            <MainLinks />
+          </Navbar.Section>
+        </Navbar>
+      }
+      styles={(theme) => ({
+        main: {
+          backgroundColor:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[8]
+              : theme.colors.gray[0],
+        },
+      })}
+    >
+      <Routes>
+        <Route path="/album" element={<Albums />} />
+      </Routes>
+    </AppShell>
+  );
 }
-
-export default App
+export default App;
