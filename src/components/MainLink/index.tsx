@@ -43,9 +43,19 @@ function MainLink({ icon, color, label, link }: MainLinkProps) {
 }
 
 const data = [
-  { icon: <User size={16} />, color: "blue", label: "Artists", link: "/album" },
-  { icon: <Album size={16} />, color: "violet", label: "Albums" },
-  { icon: <Disc size={16} />, color: "teal", label: "Songs" },
+  {
+    icon: <User size={16} />,
+    color: "blue",
+    label: "Artists",
+    link: "/artists",
+  },
+  {
+    icon: <Album size={16} />,
+    color: "violet",
+    label: "Albums",
+    link: "/albums",
+  },
+  { icon: <Disc size={16} />, color: "teal", label: "Songs", link: "/songs" },
   // { icon: <Database size={16} />, color: "grape", label: "Databases" },
 ];
 

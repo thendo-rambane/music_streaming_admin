@@ -1,0 +1,4 @@
+.tile-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(min-content, 15rem));
+}

@@ -2,6 +2,7 @@ import { AppShell, Navbar, Header } from "@mantine/core";
 import MainLinks from "./components/MainLink";
 import { Routes, Route } from "react-router-dom";
 import Albums from "./pages/Albums";
+import Artists from "./pages/Artists";
 
 function App() {
   return (
@@ -24,12 +25,13 @@ function App() {
           backgroundColor:
             theme.colorScheme === "dark"
               ? theme.colors.dark[8]
-              : theme.colors.gray[0],
+              : theme.colors.white,
         },
       })}
     >
       <Routes>
-        <Route path="/album" element={<Albums />} />
+        <Route path="/albums/*" element={<Albums />} />
+        <Route path="/artists/*" element={<Artists />} />
       </Routes>
     </AppShell>
   );

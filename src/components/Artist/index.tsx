@@ -11,12 +11,12 @@ import "./style.css";
 
 type Props = {};
 
-const AlbumCard = (props: Props) => {
+const ArtistCard = (props: Props) => {
   const theme = useMantineTheme();
   const secondaryColor =
     theme.colorScheme === "dark" ? theme.colors.dark[1] : theme.colors.gray[7];
   return (
-    <div className="album-card">
+    <div className="artist-card">
       <Card shadow="sm" p="lg">
         <Card.Section>
           <Image
@@ -29,9 +29,9 @@ const AlbumCard = (props: Props) => {
           position="apart"
           style={{ marginBottom: 5, marginTop: theme.spacing.sm }}
         >
-          <Text weight={500}>Album Name</Text>
+          <Text weight={500}>Artist Name</Text>
           <Badge color="pink" variant="light">
-            Album
+            Artist
           </Badge>
         </Group>
 
@@ -39,7 +39,7 @@ const AlbumCard = (props: Props) => {
           position="apart"
           style={{ marginBottom: 5, marginTop: theme.spacing.sm }}
         >
-          <Text size="sm">Artist Name, Artist Name</Text>
+          <Text size="sm">Music on platform</Text>
           <Badge color="blue" variant="light">
             {new Date().getFullYear()}
           </Badge>
@@ -50,11 +50,11 @@ const AlbumCard = (props: Props) => {
           fullWidth
           style={{ marginTop: 14 }}
         >
-          View album information
+          View artist information
         </Button>
       </Card>
     </div>
   );
 };
 
-export default AlbumCard;
+export default ArtistCard;

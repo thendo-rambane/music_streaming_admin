@@ -1,4 +1,6 @@
 .album-card {
   width: 15%;
   min-width: 275px;
+  margin-left: 0.5rem;
+  margin-bottom: 0.5rem;
 }
