@@ -7,7 +7,6 @@ import {
   Badge,
   Button,
 } from "@mantine/core";
-import "./style.css";
 
 type Props = {};
 

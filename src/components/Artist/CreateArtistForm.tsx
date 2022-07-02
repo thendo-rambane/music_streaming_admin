@@ -11,7 +11,8 @@ import { useModals } from "@mantine/modals";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { ReactPropTypes, useState } from "react";
 import { Link } from "react-router-dom";
-import { Check } from "tabler-icons-react";
+import { Check, X } from "tabler-icons-react";
+import Artist from "../../api/Artist";
 import getGenres from "../../helpers/genres";
 import { CustomiseArtist } from "./CustomiseArtist";
 
@@ -21,7 +22,7 @@ interface INewArtistInfo {
 }
 
 type Props = {
-  onSuccess?: (artist: INewArtistInfo) => void;
+  onSuccess?: (artist: Artist) => void;
   onError?: () => void;
   onClose?: () => void;
   onAdvance?: () => void;
@@ -34,14 +35,57 @@ const CreateArtistForm = ({
   className,
 }: Props & React.HTMLAttributes<HTMLFormElement>) => {
   const [artistName, setArtistName] = useState("");
-  const [avatar, setAvatar] = useState("");
-  const [banner, setBanner] = useState("");
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [creatingArtist, setCreatingArtist] = useState(false);
+  const [canAdvance, setCanAdvance] = useState(false);
+
   const [genres, setGenres] = useState<{ label: string; value: string }[]>(
     getGenres()
   );
-  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const [canAdvance, setCanAdvance] = useState(false);
+
+  function createArtist() {
+    setCreatingArtist(true);
+    showNotification({
+      id: "creating artist",
+      loading: true,
+      title: "Creating Artist",
+      message: "Artist is being created please dont close window",
+      autoClose: false,
+      disallowClose: true,
+    });
+    Artist.create({
+      name: artistName,
+      genres: selectedGenres,
+      banner: "",
+      avatar: "",
+    })
+      .then((artist) => {
+        setCreatingArtist(false);
+        updateNotification({
+          id: "creating artist",
+          color: "teal",
+          title: "Success",
+          message: "Artist Created",
+          icon: <Check />,
+          autoClose: 2000,
+        });
+        setCanAdvance(true);
+        onSuccess && onSuccess(artist);
+      })
+      .catch((error) => {
+        setCreatingArtist(false);
+        updateNotification({
+          id: "creating artist",
+          color: "red",
+          title: "Error",
+          message: error.message,
+          icon: <X />,
+          autoClose: 2000,
+        });
+        setCanAdvance(true);
+      });
+  }
+
   return (
     <form className={className}>
       <TextInput
@@ -76,34 +120,7 @@ const CreateArtistForm = ({
       />
       <Space h="xs" />
       <Group>
-        <Button
-          onClick={() => {
-            setCreatingArtist(true);
-            showNotification({
-              id: "creating artist",
-              loading: true,
-              title: "Creating Artist",
-              message: "Artist is being created please dont close window",
-              autoClose: false,
-              disallowClose: true,
-            });
-            const timeOut = setTimeout(() => {
-              setCreatingArtist(false);
-              updateNotification({
-                id: "creating artist",
-                color: "teal",
-                title: "Success",
-                message: "Artist Created",
-                icon: <Check />,
-                autoClose: 2000,
-              });
-              setCanAdvance(true);
-              onSuccess &&
-                onSuccess({ name: artistName, genres: selectedGenres });
-              clearTimeout(timeOut);
-            }, 2000);
-          }}
-        >
+        <Button onClick={createArtist}>
           {creatingArtist ? (
             <Loader color="white" variant="dots" />
           ) : (

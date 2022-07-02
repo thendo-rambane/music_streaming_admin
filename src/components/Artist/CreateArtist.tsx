@@ -1,6 +1,8 @@
 import { createStyles, Stepper } from "@mantine/core";
 import React, { useState } from "react";
 import { Route, Routes } from "react-router-dom";
+import Artist from "../../api/Artist";
+import ArtistDetailForm from "./ArtistDetailForm";
 import CreateArtistForm from "./CreateArtistForm";
 import { CustomiseArtist as CustomiseArtist } from "./CustomiseArtist";
 
@@ -22,38 +24,45 @@ const useStyles = createStyles((theme) => ({
 
 const CreateArtist = (props: Props) => {
   const { classes, theme } = useStyles();
-  const [artist, setArtist] = useState("");
-  const [genres, setGenres] = useState<string[]>([]);
+  const [artist, setArtist] = useState<Artist | null>(null);
 
   const [active, setActive] = useState(0);
   const nextStep = () =>
-    setActive((current) => (current < 2 ? current + 1 : current));
+    setActive((current) => (current < 3 ? current + 1 : current));
   const prevStep = () =>
     setActive((current) => (current > 0 ? current - 1 : current));
   return (
     <div className={classes.main}>
       <Stepper active={active} onStepClick={setActive} breakpoint="sm">
-        <Stepper.Step label="First step" description="Create an account">
+        <Stepper.Step label="New Artist" description="Create an artist">
           <>
             <h1>Create Artist</h1>
             <CreateArtistForm
               className={classes.artistForm}
-              onSuccess={({ name, genres }) => {
-                setArtist(name);
-                setGenres(genres);
+              onSuccess={(artist) => {
+                setArtist(artist);
               }}
               onAdvance={nextStep}
             />
           </>
         </Stepper.Step>
-        <Stepper.Step label="Second step" description="Verify email">
-          <CustomiseArtist
-            className={classes.artistForm}
-            name={artist}
-            banner=""
-            avatar=""
-            genres={genres}
-          />
+        <Stepper.Step
+          label="Artist Profile"
+          description="Customise artist profile"
+        >
+          {artist !== null && (
+            <CustomiseArtist
+              className={classes.artistForm}
+              artist={artist}
+              onAdvance={nextStep}
+            />
+          )}
+        </Stepper.Step>
+        <Stepper.Step
+          label="Artist Music"
+          description="Add Music To Artist Profile"
+        >
+          {artist !== null && <ArtistDetailForm artist={artist} />}
         </Stepper.Step>
         <Stepper.Completed>
           Completed, click back button to get to previous step
