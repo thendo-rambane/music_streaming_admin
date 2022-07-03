@@ -1,6 +1,6 @@
 FROM node:lts-alpine
 
-RUN npm install -g npm@latest
+RUN npm install -g npm@8.13
 
 RUN mkdir -p /home/node/app/node_modules
 RUN chown -R node:node /home/node/app
