@@ -1,6 +1,6 @@
-import { createStyles, Stepper } from "@mantine/core";
+import { Button, createStyles, Stepper } from "@mantine/core";
 import React, { useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import Artist from "../../api/Artist";
 import ArtistDetailForm from "./ArtistDetailForm";
 import CreateArtistForm from "./CreateArtistForm";
@@ -9,6 +9,12 @@ import { CustomiseArtist as CustomiseArtist } from "./CustomiseArtist";
 type Props = {};
 
 const useStyles = createStyles((theme) => ({
+  btnContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: theme.spacing.md,
+  },
   main: {
     backgroundColor:
       theme.colorScheme === "dark" ? theme.colors.dark[7] : "inherit",
@@ -62,7 +68,22 @@ const CreateArtist = (props: Props) => {
           label="Artist Music"
           description="Add Music To Artist Profile"
         >
-          {artist !== null && <ArtistDetailForm artist={artist} />}
+          {artist !== null && (
+            <div className={classes.btnContainer}>
+              <Button
+                component={Link}
+                to={`/artists/${artist.id && artist.id}/new_album`}
+              >
+                New Album
+              </Button>
+              <Button
+                component={Link}
+                to={`/artists/${artist.id && artist.id}/new_single`}
+              >
+                New Single
+              </Button>
+            </div>
+          )}
         </Stepper.Step>
         <Stepper.Completed>
           Completed, click back button to get to previous step

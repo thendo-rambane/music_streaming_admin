@@ -21,6 +21,27 @@ export default class Album {
     this.art = art;
   }
 
+  /**
+   * Create a new album
+   */
+  public static async create(album: IAlbum): Promise<Album> {
+    try {
+      const response: AxiosResponse<IAlbum> = await axios.post(
+        "http://localhost:3000/api/v1/album",
+        album
+      );
+      return new Album({ ...response.data });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios Error: ", error);
+        throw error;
+      } else {
+        console.error("Uknown error: ", error);
+        throw error;
+      }
+    }
+  }
+
   public async addSong(song: ISong): Promise<Song> {
     try {
       if (this.id === undefined) throw Error("No album selected");

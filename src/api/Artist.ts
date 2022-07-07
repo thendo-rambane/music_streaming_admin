@@ -59,6 +59,26 @@ export default class Artist {
   }
 
   /**
+   * Get artist by id
+   */
+  public static async getById(id: string): Promise<Artist> {
+    try {
+      const response: AxiosResponse<IArtist> = await axios.get(
+        `http://localhost:3000/api/v1/artist/${id}`
+      );
+      return new Artist({ ...response.data });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios Error: ", error);
+        throw error;
+      } else {
+        console.error("Uknown error: ", error);
+        throw error;
+      }
+    }
+  }
+
+  /**
    * addAlbum
    */
   public async addAlbum(album: IAlbum): Promise<Album> {
