@@ -107,7 +107,7 @@ const CreateArtistForm = ({
         getCreateLabel={(query) => `+ Create ${query}`}
         maxDropdownHeight={160}
         value={selectedGenres}
-        onChange={(event) => setSelectedGenres((selectedGenres) => [...event])}
+        onChange={(selectedGenres) => setSelectedGenres([...selectedGenres])}
         onCreate={(query) =>
           setGenres((current) => [
             ...current,
