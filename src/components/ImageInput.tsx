@@ -2,10 +2,13 @@ import { useRef } from "react";
 
 interface FileInputProps {
   input?: React.ForwardedRef<HTMLInputElement>;
-  onDrop: (files: File[]) => void;
+  onChange: (files: File[]) => void;
 }
 
-export default function ImageInput({ input: ref, onDrop: cb }: FileInputProps) {
+export default function ImageInput({
+  input: ref,
+  onChange: cb,
+}: FileInputProps) {
   return (
     <>
       <input
@@ -15,6 +18,11 @@ export default function ImageInput({ input: ref, onDrop: cb }: FileInputProps) {
           e.preventDefault();
           e.stopPropagation();
           e.target.files && cb([...e.target.files]);
+        }}
+        onInput={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.currentTarget.files && cb([...e.currentTarget.files]);
         }}
         hidden
       />

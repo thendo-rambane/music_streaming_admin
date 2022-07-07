@@ -44,7 +44,7 @@ const ModifiableAvatar = ({ onImageChange }: Props) => {
           {/* TODO: ADD Edit for cropping images */}
           <ImageInput
             input={avatarRef}
-            onDrop={(files) => {
+            onChange={(files) => {
               setAvatarPreview(URL.createObjectURL(files[0]));
               onImageChange(files);
             }}

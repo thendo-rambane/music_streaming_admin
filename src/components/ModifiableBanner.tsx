@@ -32,7 +32,7 @@ const ModifiableBanner = ({ onImageChange }: Props) => {
         {/* TODO: ADD Edit for cropping images */}
         <ImageInput
           input={bannerRef}
-          onDrop={(files) => {
+          onChange={(files) => {
             setBannerPreview(URL.createObjectURL(files[0]));
             onImageChange(files);
           }}

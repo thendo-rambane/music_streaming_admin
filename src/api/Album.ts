@@ -1,34 +1,51 @@
 import axios, { AxiosResponse } from "axios";
+import { defined } from "../helpers";
 import Song, { ISong } from "./Song";
 
 export interface IAlbum {
   id?: string;
   name: string;
   genres: string[];
-  art: string;
+  albumArt: string;
+  albumArtFile?: Blob;
 }
 
 export default class Album {
   private _id?: string | undefined;
   private _name: string = "";
   private _genres: string[] = [];
-  private _art: string = "";
+  private _albumArt: string = "";
 
-  constructor({ id, name, genres, art }: IAlbum) {
+  constructor({ id, name, genres, albumArt: art }: IAlbum) {
     this.id = id;
     this.name = name;
     this.genres = genres;
-    this.art = art;
+    this.albumArt = art;
   }
 
   /**
    * Create a new album
    */
-  public static async create(album: IAlbum): Promise<Album> {
+  public static async create({
+    name,
+    genres,
+    albumArtFile,
+  }: IAlbum): Promise<Album> {
     try {
+      const form = new FormData();
+
+      if (defined(albumArtFile)) {
+        albumArtFile && form.append("album_art", albumArtFile);
+      }
+      form.append("name", name);
+      form.append("genres", JSON.stringify(genres));
+
       const response: AxiosResponse<IAlbum> = await axios.post(
         "http://localhost:3000/api/v1/album",
-        album
+        form,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
       return new Album({ ...response.data });
     } catch (error) {
@@ -79,10 +96,10 @@ export default class Album {
   public set genres(value: string[]) {
     this._genres = value;
   }
-  public get art(): string {
-    return this._art;
+  public get albumArt(): string {
+    return this._albumArt;
   }
-  public set art(value: string) {
-    this._art = value;
+  public set albumArt(value: string) {
+    this._albumArt = value;
   }
 }

@@ -19,6 +19,7 @@
     "axios": "^0.27.2",
     "dayjs": "^1.11.3",
     "react": "^18.0.0",
+    "react-cropper": "^2.1.8",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.3.0",
     "tabler-icons-react": "^1.49.0"
