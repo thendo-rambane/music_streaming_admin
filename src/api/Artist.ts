@@ -22,11 +22,11 @@ export default class Artist {
   private _avatar: string = "";
 
   constructor({ id, name, genres, banner, avatar }: IArtist) {
-    this._name = name;
-    this._genres = genres;
-    this._banner = banner;
-    this._avatar = avatar;
-    this._id = id;
+    this.id = id;
+    this.name = name;
+    this.genres = genres;
+    this.banner = banner;
+    this.avatar = avatar;
   }
 
   private values({ id, name, genres, banner, avatar }: IArtist) {
@@ -43,7 +43,7 @@ export default class Artist {
   public static async create(artist: IArtist): Promise<Artist> {
     try {
       const response: AxiosResponse<IArtist> = await axios.post(
-        "http://localhost:3000/api/v1/artist",
+        "http://localhost:5000/api/v1/artist",
         artist
       );
       return new Artist({ ...response.data });
@@ -61,12 +61,14 @@ export default class Artist {
   /**
    * Get artist by id
    */
-  public static async getById(id: string): Promise<Artist> {
+  public static async getById(artistId: string): Promise<Artist> {
     try {
-      const response: AxiosResponse<IArtist> = await axios.get(
-        `http://localhost:3000/api/v1/artist/${id}`
+      const response: AxiosResponse<{ artist: IArtist }> = await axios.get(
+        `http://localhost:5000/api/v1/artist/${artistId}`
       );
-      return new Artist({ ...response.data });
+      console.log("Just got artist: ", response.data);
+      const { id, name, genres, banner, avatar } = response.data.artist;
+      return new Artist({ id, name, genres, banner, avatar });
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Axios Error: ", error);
@@ -81,12 +83,36 @@ export default class Artist {
   /**
    * addAlbum
    */
-  public async addAlbum(album: IAlbum): Promise<Album> {
+  public async addAlbum({
+    name,
+    genres,
+    albumArtFile,
+    release_date,
+    album_type,
+  }: IAlbum): Promise<Album> {
     try {
       if (this.id === undefined) throw Error("No artist selected");
+      const form = new FormData();
+
+      if (defined(albumArtFile)) {
+        albumArtFile && form.append("album_art", albumArtFile);
+      }
+      form.append("name", name);
+      form.append("album_type", album_type);
+      genres.forEach((genre) => {
+        form.append("genres", genre);
+      });
+      form.append(
+        "release_date",
+        release_date !== null ? release_date.toString() : ""
+      );
+
       const response: AxiosResponse<IAlbum> = await axios.post(
-        `http://localhost:3000/api/v1/artist/${this.id}/album`,
-        album
+        `http://localhost:5000/api/v1/artist/${this.id}/album`,
+        form,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
       return new Album({ ...response.data });
     } catch (error) {
@@ -112,7 +138,7 @@ export default class Artist {
         banner && form.append("banner", banner);
       }
       const response = await axios.put(
-        `http://localhost:3000/api/v1/artist/${this.id}/images`,
+        `http://localhost:5000/api/v1/artist/${this.id}/images`,
         form,
         {
           headers: { "Content-Type": "multipart/form-data" },

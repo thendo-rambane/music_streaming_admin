@@ -8,19 +8,14 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useModals } from "@mantine/modals";
 import { useEffect, useRef, useState } from "react";
 import Album, { IAlbum } from "../api/Album";
 import getGenres from "../helpers/genres";
-import ImageInput from "./ImageInput";
-import Cropper from "react-cropper";
-import "cropperjs/dist/cropper.css";
-import { Camera, Pencil } from "tabler-icons-react";
-
-type Props = {
-  onCreated: (album: Album) => void;
-  onError: (error: Error) => void;
-};
+import { Camera } from "tabler-icons-react";
+import { DatePicker } from "@mantine/dates";
+import CropImageInput from "./CropImageInput";
+import { z } from "zod";
+import Artist from "../api/Artist";
 
 const useStyle = createStyles((theme) => ({
   avatarContainer: {
@@ -43,47 +38,62 @@ const useStyle = createStyles((theme) => ({
     display: "flex",
     flexFlow: "row",
   },
+  albumFormContainer: {
+    display: "flex",
+    flexFlow: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  albumFormSubmit: {
+    width: "20%",
+    marginTop: theme.spacing.lg,
+  },
 }));
 
-const NewAlbumForm = ({ onCreated, onError }: Props) => {
-  const { classes, theme } = useStyle();
+const formSchema = z.object({
+  name: z.string(),
+  artist: z.string(),
+  releaseDate: z.date(),
+  genres: z.array(z.string()).min(1, "At least one genre is required"),
+  albumArtFile: z.instanceof(Blob),
+});
+
+type Props = {
+  onCreated: (album: Album) => void;
+  onError: (error: Error) => void;
+  artist?: Artist;
+  album_type: string;
+};
+const NewAlbumForm = ({ onCreated, onError, artist, album_type }: Props) => {
+  const { classes } = useStyle();
   const [genres, setGenres] = useState<{ label: string; value: string }[]>(
     getGenres()
   );
   const [originalFile, setOriginalFile] = useState("");
-  const albumArtRef = useRef<HTMLInputElement>(null);
-  const modals = useModals();
-  const albumForm = useForm<IAlbum>({
-    initialValues: {
-      name: "",
-      genres: [] as string[],
-      albumArt: "",
-      albumArtFile: undefined,
-    },
+  const [albumForm, setAlbumForm] = useState<IAlbum>({
+    name: "",
+    genres: [] as string[],
+    album_art: "",
+    albumArtFile: undefined,
+    release_date: null,
+    album_type,
   });
+  const albumArtRef = useRef<HTMLInputElement>(null);
 
-  /**Crop hooks */
-  interface ReactCropperElement extends HTMLImageElement {
-    cropper?: Cropper;
-  }
-  const cropperRef = useRef<ReactCropperElement>(null);
-  const [croppedImg, setCroppedImg] = useState("");
-  const onCrop = () => {
-    const imageElement = cropperRef.current && cropperRef.current;
-    if (imageElement !== null) {
-      const cropper = imageElement.cropper && imageElement.cropper;
-      if (cropper !== undefined) {
-        const canvas = cropper.getCroppedCanvas();
-        canvas.toBlob((blob) => {
-          if (blob !== null) {
-            albumForm.setFieldValue("albumArtFile", blob);
-          }
+  function onSubmit(album: IAlbum) {
+    artist &&
+      artist
+        .addAlbum(album)
+        .then((createdAlbum) => {
+          onCreated(createdAlbum);
+        })
+        .catch((error) => {
+          onError(error);
+        })
+        .finally(() => {
+          // albumForm.reset();
         });
-        setCroppedImg(canvas.toDataURL());
-      }
-    }
-  };
-  /**Crop hooks */
+  }
 
   //Use effect for on component unmount
   useEffect(() => {
@@ -92,100 +102,39 @@ const NewAlbumForm = ({ onCreated, onError }: Props) => {
     };
   }, []);
 
-  const addImage = () => {};
-
-  const onSubmit = () => {
-    albumForm.onSubmit((album, event) => {
-      event.preventDefault();
-      Album.create(album)
-        .then((createdAlbum) => {
-          onCreated(createdAlbum);
-        })
-        .catch((error) => {
-          onError(error);
-        })
-        .finally(() => {
-          albumForm.reset();
-        });
-    });
-  };
-  /**
-   *  TODO: ADD desired width height for aspect changes
-   *
-   *
-   * @param image - The image to be cropped
-   * @returns void
-   */
-  const openImageCropModal = (image: string) => {
-    const modal_id = modals.openModal({
-      title: "Crop Image",
-      children: (
-        <div>
-          {image !== "" ? (
-            <Cropper
-              src={image}
-              guides={false}
-              crop={onCrop}
-              ref={cropperRef}
-              viewMode={1}
-              minCropBoxHeight={10}
-              minCropBoxWidth={10}
-              responsive={true}
-              autoCropArea={1}
-              aspectRatio={1}
-              checkOrientation={false}
-            />
-          ) : (
-            <h1>No Image Selected</h1>
-          )}
-          <Button onClick={() => modals.closeModal(modal_id)}>Set Image</Button>
-          <Button
-            onClick={() => {
-              modals.closeModal(modal_id);
-              if (albumArtRef !== null)
-                albumArtRef.current && albumArtRef.current.click();
-            }}
-          >
-            Change Image
-          </Button>
-        </div>
-      ),
-    });
-  };
   return (
-    <Box>
+    <Box className={classes.albumFormContainer}>
       <h1>New Album</h1>
       <form className={classes.albumForm}>
         <Box>
           <Indicator
             label={
               <>
-                <ImageInput
-                  input={albumArtRef}
-                  onChange={(files) => {
-                    // URL.revokeObjectURL(originalFile);
-                    const image = URL.createObjectURL(files[0]);
-                    if (files.length > 0) {
-                      setOriginalFile(image);
-                      console.log("Album Preview: ", image);
+                <CropImageInput
+                  inputRef={albumArtRef}
+                  onChange={(file) => {
+                    if (file !== null) {
+                      const fileUrl = URL.createObjectURL(file);
+                      setOriginalFile(fileUrl);
                     }
-                    openImageCropModal(image);
+                    if (file !== null) {
+                      setAlbumForm((values) => {
+                        return {
+                          ...values,
+                          albumArtFile: file,
+                        };
+                      });
+                    }
                   }}
                 />
-                {originalFile === "" ? (
+                {
                   <Camera
                     onClick={() => {
                       if (albumArtRef !== null)
                         albumArtRef.current && albumArtRef.current.click();
                     }}
                   />
-                ) : (
-                  <Pencil
-                    onClick={() => {
-                      openImageCropModal(originalFile);
-                    }}
-                  />
-                )}
+                }
               </>
             }
             inline
@@ -204,10 +153,19 @@ const NewAlbumForm = ({ onCreated, onError }: Props) => {
             required
             label="Name"
             placeholder="Album Name"
-            {...albumForm.getInputProps("name")}
+            value={albumForm.name}
+            onChange={(e) => {
+              setAlbumForm((values) => {
+                return {
+                  ...values,
+                  name: e.target.value,
+                };
+              });
+            }}
           />
           <MultiSelect
             data={genres}
+            required
             label="Album Genres"
             placeholder="Pick all genres that apply to album"
             searchable
@@ -224,12 +182,44 @@ const NewAlbumForm = ({ onCreated, onError }: Props) => {
                 },
               ])
             }
-            {...albumForm.getInputProps("genres")}
+            value={albumForm.genres}
+            onChange={(new_values) => {
+              setAlbumForm((values) => {
+                return {
+                  ...values,
+                  genres: values.genres.concat(
+                    new_values.filter((genre) => !values.genres.includes(genre))
+                  ),
+                };
+              });
+            }}
           />
-          {/*TODO: Date piccker for release date */}
+          <DatePicker
+            label="Release Date"
+            value={albumForm.release_date}
+            required
+            onChange={(value) =>
+              value &&
+              setAlbumForm((values) => {
+                return {
+                  ...values,
+                  release_date: value,
+                };
+              })
+            }
+          />
+          {/*TODO: Date picker for release date */}
         </Box>
         {/*TODO: Submit button  */}
       </form>
+      <Button
+        className={classes.albumFormSubmit}
+        onClick={() => {
+          onSubmit(albumForm);
+        }}
+      >
+        Submit
+      </Button>
     </Box>
   );
 };

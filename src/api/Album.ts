@@ -6,8 +6,11 @@ export interface IAlbum {
   id?: string;
   name: string;
   genres: string[];
-  albumArt: string;
+  album_art: string;
   albumArtFile?: Blob;
+  release_date: Date | null;
+  artist_id?: string;
+  album_type: string;
 }
 
 export default class Album {
@@ -15,12 +18,29 @@ export default class Album {
   private _name: string = "";
   private _genres: string[] = [];
   private _albumArt: string = "";
+  private _released: Date | null = null;
+  private _albumType: string = "album";
+  public get album_type(): string {
+    return this._albumType;
+  }
+  public set album_type(value: string) {
+    this._albumType = value;
+  }
 
-  constructor({ id, name, genres, albumArt: art }: IAlbum) {
+  constructor({
+    id,
+    name,
+    genres,
+    album_art,
+    release_date: released,
+    album_type,
+  }: IAlbum) {
     this.id = id;
     this.name = name;
     this.genres = genres;
-    this.albumArt = art;
+    this.album_art = album_art;
+    this.released_date = released;
+    this.album_type = album_type;
   }
 
   /**
@@ -30,7 +50,13 @@ export default class Album {
     name,
     genres,
     albumArtFile,
+    release_date,
+    artist_id,
   }: IAlbum): Promise<Album> {
+    if (artist_id === null) {
+      console.error("Artist ID is null");
+      throw new Error("Artist ID is null");
+    }
     try {
       const form = new FormData();
 
@@ -39,9 +65,10 @@ export default class Album {
       }
       form.append("name", name);
       form.append("genres", JSON.stringify(genres));
+      form.append("release_date", JSON.stringify(release_date));
 
       const response: AxiosResponse<IAlbum> = await axios.post(
-        "http://localhost:3000/api/v1/album",
+        `http://localhost:5000/api/v1/artist/${artist_id}/album`,
         form,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -63,7 +90,7 @@ export default class Album {
     try {
       if (this.id === undefined) throw Error("No album selected");
       const response: AxiosResponse<ISong> = await axios.post(
-        `http://localhost:3000/api/v1/album/${this.id}/song`,
+        `http://localhost:5000/api/v1/album/${this.id}/song`,
         song
       );
       return new Song({ ...response.data });
@@ -96,10 +123,16 @@ export default class Album {
   public set genres(value: string[]) {
     this._genres = value;
   }
-  public get albumArt(): string {
+  public get album_art(): string {
     return this._albumArt;
   }
-  public set albumArt(value: string) {
+  public set album_art(value: string) {
     this._albumArt = value;
+  }
+  public get released_date(): Date | null {
+    return this._released;
+  }
+  public set released_date(value: Date | null) {
+    this._released = value;
   }
 }
