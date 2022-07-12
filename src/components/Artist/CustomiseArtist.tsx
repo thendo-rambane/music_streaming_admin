@@ -71,17 +71,18 @@ export function CustomiseArtist({
   }
   function updateArtist() {
     showUpdatingArtistNotification();
-    artist
-      .addImages({
-        banner,
-        avatar,
-      })
-      .then(() => {
-        imagesUploaded();
-      })
-      .catch((error) => {
-        imageUploadError(error);
-      });
+    artist &&
+      artist
+        .addImages({
+          banner,
+          avatar,
+        })
+        .then(() => {
+          imagesUploaded();
+        })
+        .catch((error) => {
+          imageUploadError(error);
+        });
   }
 
   function uploadBanner(file: File) {

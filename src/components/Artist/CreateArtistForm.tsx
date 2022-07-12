@@ -82,7 +82,7 @@ const CreateArtistForm = ({
           icon: <X />,
           autoClose: 2000,
         });
-        setCanAdvance(true);
+        setCanAdvance(false);
       });
   }
 

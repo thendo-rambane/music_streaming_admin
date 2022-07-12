@@ -7,11 +7,13 @@ import {
   Badge,
   Button,
 } from "@mantine/core";
+import { Link } from "react-router-dom";
+import Album from "../../api/Album";
 import "./style.css";
 
-type Props = {};
+type Props = { album: Album };
 
-const AlbumCard = (props: Props) => {
+const AlbumCard = ({ album }: Props) => {
   const theme = useMantineTheme();
   const secondaryColor =
     theme.colorScheme === "dark" ? theme.colors.dark[1] : theme.colors.gray[7];
@@ -20,7 +22,7 @@ const AlbumCard = (props: Props) => {
       <Card shadow="sm" p="lg">
         <Card.Section>
           <Image
-            src="/images/album.jpg"
+            src={album.album_art}
             height={160}
             alt="Blank vynil cover with vynil spilling out"
           />
@@ -29,19 +31,9 @@ const AlbumCard = (props: Props) => {
           position="apart"
           style={{ marginBottom: 5, marginTop: theme.spacing.sm }}
         >
-          <Text weight={500}>Album Name</Text>
+          <Text weight={500}>{album.name}</Text>
           <Badge color="pink" variant="light">
-            Album
-          </Badge>
-        </Group>
-
-        <Group
-          position="apart"
-          style={{ marginBottom: 5, marginTop: theme.spacing.sm }}
-        >
-          <Text size="sm">Artist Name, Artist Name</Text>
-          <Badge color="blue" variant="light">
-            {new Date().getFullYear()}
+            {album.album_type}
           </Badge>
         </Group>
         <Button
@@ -49,8 +41,10 @@ const AlbumCard = (props: Props) => {
           color="blue"
           fullWidth
           style={{ marginTop: 14 }}
+          component={Link}
+          to={`/albums/${album.id}/edit`}
         >
-          View album information
+          Edit Album
         </Button>
       </Card>
     </div>

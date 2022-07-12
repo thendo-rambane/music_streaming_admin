@@ -59,9 +59,9 @@ const formSchema = z.object({
 });
 
 type Props = {
-  onCreated: (album: Album) => void;
-  onError: (error: Error) => void;
-  artist?: Artist;
+  onCreated?: (album: Album) => void;
+  onError?: (error: Error) => void;
+  artist: Artist;
   album_type: string;
 };
 const NewAlbumForm = ({ onCreated, onError, artist, album_type }: Props) => {
@@ -77,22 +77,23 @@ const NewAlbumForm = ({ onCreated, onError, artist, album_type }: Props) => {
     albumArtFile: undefined,
     release_date: null,
     album_type,
+    artists: [],
+    tracks: [],
   });
   const albumArtRef = useRef<HTMLInputElement>(null);
 
   function onSubmit(album: IAlbum) {
-    artist &&
-      artist
-        .addAlbum(album)
-        .then((createdAlbum) => {
-          onCreated(createdAlbum);
-        })
-        .catch((error) => {
-          onError(error);
-        })
-        .finally(() => {
-          // albumForm.reset();
-        });
+    artist
+      .addAlbum(album)
+      .then((createdAlbum) => {
+        // onCreated(createdAlbum);
+      })
+      .catch((error) => {
+        // onError(error);
+      })
+      .finally(() => {
+        // albumForm.reset();
+      });
   }
 
   //Use effect for on component unmount

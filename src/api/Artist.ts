@@ -6,7 +6,7 @@ interface IArtistImages {
   banner?: File;
   avatar?: File;
 }
-interface IArtist {
+export interface IArtist {
   id?: string;
   name: string;
   genres: string[];
@@ -38,6 +38,27 @@ export default class Artist {
   }
 
   /**
+   * get all artists
+   */
+
+  public static async getAll(): Promise<Artist[]> {
+    try {
+      const response: AxiosResponse<{ artists: IArtist[] }> = await axios.get(
+        "http://localhost:5000/api/v1/artist"
+      );
+      return response.data.artists.map((artist) => new Artist(artist));
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios Error: ", error);
+        throw error;
+      } else {
+        console.error("Uknown error: ", error);
+        throw error;
+      }
+    }
+  }
+
+  /**
    * new
    */
   public static async create(artist: IArtist): Promise<Artist> {
@@ -66,7 +87,7 @@ export default class Artist {
       const response: AxiosResponse<{ artist: IArtist }> = await axios.get(
         `http://localhost:5000/api/v1/artist/${artistId}`
       );
-      console.log("Just got artist: ", response.data);
+      // console.log("Just got artist: ", response.data);
       const { id, name, genres, banner, avatar } = response.data.artist;
       return new Artist({ id, name, genres, banner, avatar });
     } catch (error) {

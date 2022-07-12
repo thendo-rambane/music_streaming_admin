@@ -7,10 +7,14 @@ import {
   Badge,
   Button,
 } from "@mantine/core";
+import { Link } from "react-router-dom";
+import Artist from "../../api/Artist";
 
-type Props = {};
+type Props = {
+  artist: Artist;
+};
 
-const ArtistCard = (props: Props) => {
+const ArtistCard = ({ artist }: Props) => {
   const theme = useMantineTheme();
   const secondaryColor =
     theme.colorScheme === "dark" ? theme.colors.dark[1] : theme.colors.gray[7];
@@ -19,7 +23,7 @@ const ArtistCard = (props: Props) => {
       <Card shadow="sm" p="lg">
         <Card.Section>
           <Image
-            src="/images/album.jpg"
+            src={artist.banner}
             height={160}
             alt="Blank vynil cover with vynil spilling out"
           />
@@ -28,28 +32,21 @@ const ArtistCard = (props: Props) => {
           position="apart"
           style={{ marginBottom: 5, marginTop: theme.spacing.sm }}
         >
-          <Text weight={500}>Artist Name</Text>
+          <Text weight={500}>{artist.name}</Text>
           <Badge color="pink" variant="light">
             Artist
           </Badge>
         </Group>
 
-        <Group
-          position="apart"
-          style={{ marginBottom: 5, marginTop: theme.spacing.sm }}
-        >
-          <Text size="sm">Music on platform</Text>
-          <Badge color="blue" variant="light">
-            {new Date().getFullYear()}
-          </Badge>
-        </Group>
         <Button
           variant="light"
           color="blue"
           fullWidth
           style={{ marginTop: 14 }}
+          component={Link}
+          to={`/artists/${artist.id}/edit`}
         >
-          View artist information
+          Edit Artist
         </Button>
       </Card>
     </div>

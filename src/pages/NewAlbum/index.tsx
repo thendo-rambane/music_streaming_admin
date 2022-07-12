@@ -103,7 +103,7 @@ const NewAlbum = ({ album_type }: Props) => {
                   if (value)
                     songForm.setListItem("albumSongs", index, {
                       ...song,
-                      trackNumber: value,
+                      track_number: value,
                     });
                 }}
               />
@@ -111,7 +111,7 @@ const NewAlbum = ({ album_type }: Props) => {
             <Grid.Col span={4}>
               <TextInput
                 label="Song Name"
-                placeholder={`Name of track ${song.trackNumber}`}
+                placeholder={`Name of track ${song.track_number}`}
                 {...songForm.getListInputProps("albumSongs", index, "name")}
               />
             </Grid.Col>
@@ -205,8 +205,8 @@ const NewAlbum = ({ album_type }: Props) => {
             onClick={() =>
               songForm.addListItem("albumSongs", {
                 name: "",
-                trackNumber: songForm.values.albumSongs.length + 1,
-                url: "",
+                track_number: songForm.values.albumSongs.length + 1,
+                href: "",
               })
             }
           >
