@@ -19,11 +19,18 @@ const AlbumCard = ({ album }: Props) => {
     theme.colorScheme === "dark" ? theme.colors.dark[1] : theme.colors.gray[7];
   return (
     <div className="album-card">
-      <Card shadow="sm" p="lg">
+      <Card
+        shadow="sm"
+        p="lg"
+        sx={{
+          width: "30vh",
+        }}
+      >
         <Card.Section>
           <Image
             src={album.album_art}
-            height={160}
+            height={"30vh"}
+            width={"30vh"}
             alt="Blank vynil cover with vynil spilling out"
           />
         </Card.Section>

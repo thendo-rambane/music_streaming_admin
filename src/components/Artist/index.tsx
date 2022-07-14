@@ -20,22 +20,32 @@ const ArtistCard = ({ artist }: Props) => {
     theme.colorScheme === "dark" ? theme.colors.dark[1] : theme.colors.gray[7];
   return (
     <div className="artist-card">
-      <Card shadow="sm" p="lg">
+      <Card
+        shadow="sm"
+        p="lg"
+        sx={{
+          width: "15vh",
+        }}
+      >
         <Card.Section>
           <Image
-            src={artist.banner}
-            height={160}
+            src={artist.avatar}
+            height={"15vh"}
+            width={"15vh"}
             alt="Blank vynil cover with vynil spilling out"
           />
         </Card.Section>
         <Group
           position="apart"
-          style={{ marginBottom: 5, marginTop: theme.spacing.sm }}
+          style={{
+            marginBottom: 5,
+            marginTop: theme.spacing.sm,
+            textAlign: "center",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <Text weight={500}>{artist.name}</Text>
-          <Badge color="pink" variant="light">
-            Artist
-          </Badge>
         </Group>
 
         <Button
@@ -46,7 +56,7 @@ const ArtistCard = ({ artist }: Props) => {
           component={Link}
           to={`/artists/${artist.id}/edit`}
         >
-          Edit Artist
+          Edit
         </Button>
       </Card>
     </div>

@@ -28,6 +28,25 @@ export default class Song {
   }
 
   /**
+   * Delete the song from the database
+   */
+  public async delete(): Promise<void> {
+    try {
+      const response: AxiosResponse = await axios.delete(
+        `http://localhost:5000/api/v1/track/${this._id}`
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios Error: ", error);
+        throw error;
+      } else {
+        console.error("Uknown error: ", error);
+        throw error;
+      }
+    }
+  }
+
+  /**
    * Given a song id Delete the song from the database
    */
   public static async delete(id: string): Promise<void> {

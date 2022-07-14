@@ -1,12 +1,4 @@
-import {
-  Badge,
-  Button,
-  Grid,
-  Loader,
-  NumberInput,
-  Slider,
-  TextInput,
-} from "@mantine/core";
+import { Box, Button, Grid, NumberInput, TextInput } from "@mantine/core";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { useEffect, useRef, useState } from "react";
 import { Check, FileImport, Trash, X } from "tabler-icons-react";
@@ -47,8 +39,8 @@ const SongFormItem = ({ onDelete, uploadStatus, value, onChange }: Props) => {
       >
         <Grid.Col span={1}>
           <NumberInput
-            label="Track"
             disabled
+            label="Track"
             value={value.track_number}
             onChange={(value) => {
               if (value) {
@@ -98,7 +90,6 @@ const SongFormItem = ({ onDelete, uploadStatus, value, onChange }: Props) => {
             mt={25}
             variant="filled"
             color={"red"}
-            leftIcon={<Trash size={14} />}
             onClick={() => {
               if (value.id) {
                 showNotification({
@@ -135,54 +126,26 @@ const SongFormItem = ({ onDelete, uploadStatus, value, onChange }: Props) => {
               }
             }}
           >
-            Delete
+            {<Trash size={14} />}
           </Button>
         </Grid.Col>
-        <Grid.Col span={1}>
-          {uploadStatus && (
-            <Badge
-              mt={22.5}
-              size="xl"
-              color={
-                uploadStatus === "uploading"
-                  ? "yellow"
-                  : uploadStatus === "success"
-                  ? "green"
-                  : "red"
-              }
-              rightSection={
-                uploadStatus === "uploading" ? (
-                  <Loader />
-                ) : uploadStatus === "success" ? (
-                  <Check size={14} />
-                ) : (
-                  <X size={14} />
-                )
-              }
-            >
-              {uploadStatus}
-            </Badge>
-          )}
-        </Grid.Col>
       </Grid>
-      <Grid>
+      <div>
         {value.file instanceof File && (
           <Grid.Col span={12}>{value.file?.name}</Grid.Col>
         )}
-      </Grid>
-      <Grid>
-        <Grid.Col span={12}>
-          {songUrl !== "" && (
-            <audio
-              src={songUrl}
-              controls={true}
-              style={{
-                width: "100%",
-              }}
-            />
-          )}
-        </Grid.Col>
-      </Grid>
+      </div>
+      <Box mt="md">
+        {songUrl !== "" && (
+          <audio
+            src={songUrl}
+            controls={true}
+            style={{
+              width: "100%",
+            }}
+          />
+        )}
+      </Box>
     </div>
   );
 };
